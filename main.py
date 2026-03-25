@@ -1,6 +1,5 @@
 import asyncio
 import edge_tts
-import os
 from moviepy.video.VideoClip import ColorClip, TextClip
 from moviepy.audio.io.AudioFileClip import AudioFileClip
 from moviepy.video.compositing.CompositeVideoClip import CompositeVideoClip
@@ -8,34 +7,34 @@ from moviepy.video.compositing.CompositeVideoClip import CompositeVideoClip
 SCRIPT = "Psychology kehti hai ki jo log akele rehna pasand karte hain, unka dimaag baki logon se zyada creative hota hai."
 
 async def generate_video():
-    print("Mission Day 1: Final Attempt...")
+    print("Mission Day 1: Bulletproof Version...")
     
-    # Audio Generation
+    # 1. Audio Generation
     communicate = edge_tts.Communicate(SCRIPT, "hi-IN-MadhurNeural")
     await communicate.save("voice.mp3")
-    
     audio = AudioFileClip("voice.mp3")
-    audio_duration = audio.duration
+    dur = audio.duration
 
-    # Background - Fix: v2 uses duration= instead of with_duration()
-    bg = ColorClip(size=(1080, 1920), color=(15, 15, 15), duration=audio_duration)
+    # 2. Background
+    bg = ColorClip(size=(1080, 1920), color=(15, 15, 15)).with_duration(dur)
 
-    # Text Overlay - Fix: same here
+    # 3. Text (MoviePy v2.0 exact syntax: positional arguments only)
+    # Humein 'text=' keyword nahi use karna hai v2 mein
     txt = TextClip(
-        text=SCRIPT,
-        font_size=80,
-        color='yellow',
-        method='caption',
-        size=(900, None),
-        duration=audio_duration
-    ).with_position('center')
+        SCRIPT, 
+        font_size=70, 
+        color='yellow', 
+        size=(900, None), 
+        method='caption'
+    ).with_duration(dur).with_position('center')
 
-    # Assembly
+    # 4. Assembly
     final_video = CompositeVideoClip([bg, txt])
     final_video.audio = audio
     
+    # Export
     final_video.write_videofile("output_video.mp4", fps=24, codec="libx264", audio_codec="aac")
-    print("SUCCESS: Video is ready!")
+    print("SUCCESS: Pilot, video is 100% ready!")
 
 if __name__ == "__main__":
     asyncio.run(generate_video())
