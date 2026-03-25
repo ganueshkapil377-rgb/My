@@ -20,7 +20,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y ffmpeg
-          pip install moviepy edge-tts requests Pillow
+          pip install moviepy==2.0.0.dev2 edge-tts requests Pillow
 
       - name: Run Video Engine
         run: python main.py
