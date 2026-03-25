@@ -1,0 +1,32 @@
+name: Generate Daily Video
+on:
+  schedule:
+    - cron: '0 */8 * * *' # Har 8 ghante mein chalega
+  workflow_dispatch: # Manual run ke liye button
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install Dependencies
+        run: |
+          sudo apt-get install ffmpeg
+          pip install -r requirements.txt
+
+      - name: Run Video Engine
+        run: python main.py
+
+      - name: Upload Video to Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: Daily-Short-Video
+          path: output_video.mp4
+          
