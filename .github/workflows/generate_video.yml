@@ -1,33 +1,4 @@
-name: Generate Daily Video
-on:
-  schedule:
-    - cron: '0 */8 * * *'
-  workflow_dispatch:
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.9'
-
       - name: Install Dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y ffmpeg
-          pip install moviepy==2.0.0.dev2 edge-tts requests Pillow
-
-      - name: Run Video Engine
-        run: python main.py
-
-      - name: Upload Video to Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: Daily-Short-Video
-          path: output_video.mp4
+          pip install edge-tts
           
