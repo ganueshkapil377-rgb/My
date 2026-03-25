@@ -1,42 +1,48 @@
 import asyncio
 import edge_tts
 import os
+# Correct import paths for MoviePy v2
 from moviepy.video.VideoClip import ColorClip, TextClip
 from moviepy.audio.io.AudioFileClip import AudioFileClip
 from moviepy.video.compositing.CompositeVideoClip import CompositeVideoClip
 
-SCRIPT = "Psychology kehti hai ki jo log akele rehna pasand karte hain, unka dimaag baki logon se zyada creative hota hai. Wo bheed se nahi, balki apne khayalon se baatein karte hain."
+# 1. Pilot's Viral Script (Day 1 - Retention Hack)
+SCRIPT = "Psychology kehti hai ki jo log akele rehna pasand karte hain, unka dimaag baki logon se zyada creative hota hai."
 
 async def generate_video():
-    print("Mision Day 1: Final Push...")
+    print("Mision Day 1: Final Push... Corrected Syntax...")
     
-    # 1. Voice
+    # Audio Generation
     communicate = edge_tts.Communicate(SCRIPT, "hi-IN-MadhurNeural")
     await communicate.save("voice.mp3")
     
+    # Audio Load duration ke liye
     audio = AudioFileClip("voice.mp3")
-    audio_duration = audio.duration
+    duration = audio.duration
+    print(f"Audio Duration: {duration} seconds")
 
-    # 2. Background (Fixed: Using duration parameter directly)
-    bg = ColorClip(size=(1080, 1920), color=(15, 15, 15), duration=audio_duration)
+    # 2. Background (Color Clip)
+    bg = ColorClip(size=(1080, 1920), color=(15, 15, 15)).with_duration(duration)
 
-    # 3. Text (Fixed: Using duration parameter directly)
+    # 3. Text Overlay (Captions)
+    # Fix: MoviePy v2 requires positional text first, not 'text=' keyword.
     txt = TextClip(
-        text=SCRIPT,
-        font_size=70,
+        SCRIPT, # First positional argument is the text itself
+        font_size=80,
         color='yellow',
         method='caption',
-        size=(900, None),
-        duration=audio_duration
-    ).with_position('center')
+        size=(900, None)
+    ).with_duration(duration).with_position('center')
 
-    # 4. Final Assemble
+    # 4. Final Video Assembly
+    print("Assembling Video Layers...")
     final_video = CompositeVideoClip([bg, txt])
     final_video.audio = audio
     
     # 5. Export
+    print("Exporting the video to output_video.mp4...")
     final_video.write_videofile("output_video.mp4", fps=24, codec="libx264", audio_codec="aac")
-    print("MISSION ACCOMPLISHED: output_video.mp4 is ready!")
+    print("SUCCESS: Pilot, the video file is ready!")
 
 if __name__ == "__main__":
     asyncio.run(generate_video())
