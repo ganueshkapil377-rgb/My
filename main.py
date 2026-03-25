@@ -2,25 +2,26 @@ import asyncio
 import edge_tts
 import subprocess
 
-SCRIPT = "Psychology kehti hai ki jo log akele rehna pasand karte hain, unka dimaag baki logon se zyada creative hota hai."
-
-async def make_video():
-    print("Step 1: Making Audio...")
-    communicate = edge_tts.Communicate(SCRIPT, "hi-IN-MadhurNeural")
+async def create_video():
+    print("Making Audio...")
+    txt = "Psychology kehti hai ki akele rehne waale log zyada creative hote hain. Wo bheed se nahi, apne khayalon se baatein karte hain."
+    
+    communicate = edge_tts.Communicate(txt, "hi-IN-MadhurNeural")
     await communicate.save("voice.mp3")
 
-    print("Step 2: Making Video with FFmpeg (The Jugad)...")
-    # Ye command seedha black background aur text overlay banayega
-    cmd = (
-        f"ffmpeg -f colorspace -f lavfi -i color=c=black:s=1080x1920:d=10 "
-        f"-i voice.mp3 "
-        f"-vf \"drawtext=text='{SCRIPT}':fontcolor=yellow:fontsize=50:x=(w-text_w)/2:y=(h-text_h)/2:fix_bounds=1\" "
-        f"-c:v libx264 -c:a aac -shortest output_video.mp4 -y"
-    )
+    print("Making Video with FFmpeg...")
+    # Seedha command jo black screen aur yellow text banayega
+    cmd = [
+        "ffmpeg", "-y",
+        "-f", "lavfi", "-i", "color=c=0x0F0F0F:s=1080x1920:d=10",
+        "-i", "voice.mp3",
+        "-vf", "drawtext=text='Psychology says\\: Loners are Creative':fontcolor=yellow:fontsize=60:x=(w-text_w)/2:y=(h-text_h)/2",
+        "-c:v", "libx264", "-c:a", "aac", "-shortest", "output_video.mp4"
+    ]
     
-    subprocess.run(cmd, shell=True)
-    print("DONE! output_video.mp4 is ready.")
+    subprocess.run(cmd)
+    print("SUCCESS: Pilot, video ready!")
 
 if __name__ == "__main__":
-    asyncio.run(make_video())
+    asyncio.run(create_video())
     
